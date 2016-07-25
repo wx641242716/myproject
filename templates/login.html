@@ -1,0 +1,178 @@
+
+  
+<html>  
+<head>  
+<title>test_demo</title>  
+  
+<script type="text/javascript" src="{{url_for('static', filename='jquery-3.1.0.min.js')}}" ></script>  
+<script type="text/javascript" src="{{url_for('static', filename='jquery.json.min.js')}}"></script>  
+  
+<script type="text/javascript">  
+function sendRegister() {  
+    var username1 = $("#username1").val();  
+	var password1 = $("#password1").val();  
+    var request = {   
+          
+            username: username1,  
+            password: password1,  
+           
+    };  
+	
+    //调用了jquery.json 库  
+    var encoded = $.toJSON( request );  
+    var jsonStr = encoded;  
+    
+	
+    $.ajax({  
+        url  : 'http://127.0.0.1:5000/api/users',  
+        type : 'POST',  
+        data : jsonStr,  
+    
+        contentType : 'application/json',  
+		
+        success : function(data, status, xhr) {  
+//         Do Anything After get Return data  
+         $.each(data.payload, function(index){  
+             $("#result").append("</br>" + data.payload[index].beanStr);  
+         });  
+        },  
+        Error : function(xhr, error, exception) {  
+            // handle the error.    
+            alert(exception.toString());  
+        }  
+    });  
+}  
+
+function sendAuth() {  
+   
+	var BasicAuthorizationCode = function(username, password){
+    var safeStr = unescape(encodeURIComponent(username + ':' + password));
+    var btoaCode = btoa(safeStr);
+    return 'Basic ' + btoaCode;
+};
+	var username2 = $("#username2").val();  
+	var password2 = $("#password2").val(); 
+    $.ajax({  
+        url :'http://127.0.0.1:5000/api/resource',  
+        type : 'GET',  
+         
+    
+        contentType : 'application/json',  
+		
+		beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Authorization', BasicAuthorizationCode(username2, password2));
+                    },
+        success : function(data, status, xhr) {  
+//         Do Anything After get Return data  
+         $.each(data.payload, function(index){  
+             $("#result").append("</br>" + data.payload[index].beanStr);  
+         });  
+        },  
+        Error : function(xhr, error, exception) {  
+            // handle the error.    
+            alert(exception.toString());  
+        }  
+		
+    });  
+	 $.ajax({  
+        url :'http://127.0.0.1:5000/api/token',  
+        type : 'GET',  
+         
+    
+        contentType : 'application/json',  
+		
+		beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Authorization', BasicAuthorizationCode(username2, password2));
+                    },
+        success : function(data, status, xhr) {  
+//         Do Anything After get Return data  
+         $.each(data.payload, function(index){  
+             $("#result").append("</br>" + data.payload[index].beanStr);  
+         });  
+        },  
+        Error : function(xhr, error, exception) {  
+            // handle the error.    
+            alert(exception.toString());  
+        }  
+		
+    });  
+	
+	
+}  
+function GetCookie() {
+        var arg = 'token' + "=";
+        var alen = arg.length;
+        var clen = document.cookie.length;
+        var i = 0;
+        while (i < clen) {
+            var j = i + alen;
+            //alert(j);
+            if (document.cookie.substring(i, j) == arg) return getCookieVal(j);
+            i = document.cookie.indexOf(" ", i) + 1;
+            if (i == 0) break;
+        }
+        return null;
+    }
+ 
+      
+    function getCookieVal(offset) {
+        var endstr = document.cookie.indexOf(";", offset);
+        if (endstr == -1) endstr = document.cookie.length;
+        return unescape(document.cookie.substring(offset, endstr));
+    }
+function useCookie() {  
+	var BasicAuthorizationCode1 = function(username, password){
+    var safeStr = unescape(encodeURIComponent(username + ':' + password));
+    var btoaCode = btoa(safeStr);
+    return 'Basic ' + btoaCode;
+};
+
+	var token=GetCookie();
+	  $.ajax({  
+        url :'http://127.0.0.1:5000/api/resource',  
+        type : 'GET',  
+         
+    
+        contentType : 'application/json',  
+		
+		beforeSend: function(xhr) {
+                        xhr.setRequestHeader('Authorization', BasicAuthorizationCode1(token, 'unused'));
+                    },
+        success : function(data, status, xhr) {  
+//         Do Anything After get Return data  
+         $.each(data.payload, function(index){  
+             $("#result").append("</br>" + data.payload[index].beanStr);  
+         });  
+        },  
+        Error : function(xhr, error, exception) {  
+            // handle the error.    
+            alert(exception.toString());  
+        }  
+		
+    });  
+	
+	
+}  
+
+
+</script>  
+
+
+
+</head>  
+<body>  
+    <!-- Send JSON -->  
+    <B>username:   </B><input id="username1"  type="text"  style="width: 300px;"/>  
+	<B>password:   </B><input id="password1"  type="text"  style="width: 300px;"/>  
+    <button class="button" id="buttonUpload" style="margin-left:10px;"  
+                onclick="return sendRegister();">register</button>  
+				
+	<B>username :   </B><input id="username2"  type="text"  style="width: 300px;"/>  
+	<B>password :   </B><input id="password2"  type="text"  style="width: 300px;"/>  
+    <button class="button" id="buttonUpload" style="margin-left:10px;"  
+                onclick="return sendAuth();">auth</button>
+	<button class="button" id="buttonUpload" style="margin-left:10px;"  
+                onclick="return useCookie();">usecookie</button>  
+    
+</body>  
+</html>  
